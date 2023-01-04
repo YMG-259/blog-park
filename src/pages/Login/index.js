@@ -1,20 +1,56 @@
-import React from 'react'
+import React, { useState } from 'react'
 import NavBar from '@/components/NavBar'
 import styles from './index.module.scss'
 import Input from '@/components/Input'
+import classNames from 'classnames'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
+import { useDispatch } from 'react-redux'
+import { sendCode, login } from '../../store/actions/login'
+import { Toast } from 'antd-mobile'
+import { useHistory } from 'react-router-dom'
+
 const Login = () => {
-  const onExtraClick = () => {
-    console.log(5555)
+  const dispatch = useDispatch()
+  const history = useHistory()
+  const [time, setTime] = useState(0)
+  const onExtraClick = async () => {
+    if (time > 0) return
+    if (!/^1[3-9]\d{9}$/.test(mobile)) {
+      formik.setTouched({
+        mobile: true,
+      })
+      return
+    }
+
+    await dispatch(sendCode(mobile))
+    // console.log('success')
+    Toast.show({
+      icon: 'success',
+      content: '验证码获取成功',
+    })
+    setTime(60)
+    let timer = setInterval(() => {
+      setTime((time) => {
+        if (time === 1) {
+          clearInterval(timer)
+        }
+        return time - 1
+      })
+    }, 1000)
   }
   const formik = useFormik({
     initialValues: {
-      mobile: '',
-      code: '',
+      mobile: '15546842111',
+      code: '246810',
     },
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2))
+    async onSubmit(values) {
+      await dispatch(login(values))
+      Toast.show({
+        icon: 'success',
+        content: '登录成功',
+      })
+      history.push('/home')
     },
     validationSchema: Yup.object({
       mobile: Yup.string()
@@ -31,8 +67,11 @@ const Login = () => {
     handleChange,
     handleSubmit,
     handleBulr,
+    touched,
+    errors,
+    isValid,
   } = formik
-  console.log(formik)
+  // console.log(formik)
   return (
     <div className={styles.root}>
       {/* 标题 */}
@@ -49,20 +88,30 @@ const Login = () => {
               name="mobile"
               onBulr={handleBulr}
             ></Input>
+            {touched.mobile && errors.mobile ? (
+              <div className="validate">{errors.mobile}</div>
+            ) : null}
           </div>
 
           <div className="input-item">
             <Input
               placeholder="请输入验证码"
-              extra="获取验证码"
+              extra={time === 0 ? '获取验证码' : `${time}s后获取`}
               onExtraClick={onExtraClick}
               value={code}
               onChange={handleChange}
               name="code"
+              onBulr={handleBulr}
             ></Input>
+            {touched.code && errors.code ? (
+              <div className="validate">{errors.mobile}</div>
+            ) : null}
           </div>
-
-          <button type="submit" className="login-btn">
+          <button
+            type="submit"
+            className={classNames('login-btn', { disabled: !isValid })}
+            disabled={!isValid}
+          >
             登录
           </button>
         </form>
