@@ -1,4 +1,5 @@
 import request from '@utils/request'
+import { setTokenInfo } from '../../utils/storage'
 
 export const sendCode = (mobile) => {
   return async (dispatch) => {
@@ -29,5 +30,6 @@ export const login = (data) => {
     // const tokenInfo = res.data.token
     // console.log(tokenInfo)
     dispatch(savaToken(res.data))
+    setTokenInfo(res.data)
   }
 }
