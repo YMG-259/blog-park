@@ -1,5 +1,5 @@
 import request from '@utils/request'
-import { setTokenInfo } from '../../utils/storage'
+import { removeTokenInfo, setTokenInfo } from '../../utils/storage'
 
 export const sendCode = (mobile) => {
   return async (dispatch) => {
@@ -31,5 +31,19 @@ export const login = (data) => {
     // console.log(tokenInfo)
     dispatch(savaToken(res.data))
     setTokenInfo(res.data)
+  }
+}
+
+/**
+ * logout
+ */
+export const logout = () => {
+  return (dispatch) => {
+    // 移除本地token
+    removeTokenInfo()
+    //移除redux的token
+    dispatch({
+      type: 'login/logout',
+    })
   }
 }
