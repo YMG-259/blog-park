@@ -19,6 +19,8 @@ module.exports = {
       '@types': pathResolve('src/types'),
       '@utils': pathResolve('src/utils'),
       '@contexts': pathResolve('src/contexts'),
+
+      '@': path.resolve(__dirname, 'src'),
     },
     configure(webpackConfig) {
       // 配置扩展扩展名
