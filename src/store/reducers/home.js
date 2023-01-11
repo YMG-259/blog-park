@@ -1,5 +1,6 @@
 const initValue = {
   userChannels: [],
+  allChannels: [],
 }
 
 export default function reducer(state = initValue, action) {
@@ -9,6 +10,11 @@ export default function reducer(state = initValue, action) {
       return {
         ...state,
         userChannels: payload,
+      }
+    case 'home/saveAllChannels':
+      return {
+        ...state,
+        allChannels: payload,
       }
     default:
       return state
