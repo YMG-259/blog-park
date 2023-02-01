@@ -2,6 +2,7 @@ import React from 'react'
 import NavBar from '@/components/NavBar'
 import styles from './index.module.scss'
 import Input from '@/components/Input'
+import * as Yup from 'yup'
 import { useFormik } from 'formik'
 const Login = () => {
   const onExtraClick = () => {
@@ -15,16 +16,14 @@ const Login = () => {
     onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2))
     },
-    validate: (values) => {
-      const errors = {}
-      if (!values.mobile) {
-        errors.mobile = '手机号不能为空'
-      }
-      if (!values.code) {
-        errors.code = '验证码不能为空'
-      }
-      return errors
-    },
+    validationSchema: Yup.object({
+      mobile: Yup.string()
+        .required('手机号不能为空')
+        .matches(/^1[3-9]\d{9}$/, '手机号格式错误'),
+      code: Yup.string()
+        .required('验证码不能为空')
+        .matches(/^\d{6}$/, '验证码格式错误'),
+    }),
   })
 
   const {
@@ -32,8 +31,6 @@ const Login = () => {
     handleChange,
     handleSubmit,
     handleBulr,
-    errors,
-    touched,
   } = formik
   console.log(formik)
   return (
@@ -52,9 +49,6 @@ const Login = () => {
               name="mobile"
               onBulr={handleBulr}
             ></Input>
-            {touched.mobile && errors.mobile ? (
-              <div className="validate">{errors.mobile}</div>
-            ) : null}
           </div>
 
           <div className="input-item">
@@ -66,9 +60,6 @@ const Login = () => {
               onChange={handleChange}
               name="code"
             ></Input>
-            {touched.code && errors.code ? (
-              <div className="validate">{errors.code}</div>
-            ) : null}
           </div>
 
           <button type="submit" className="login-btn">
